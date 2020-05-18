@@ -1,0 +1,20 @@
+# 複数のコンテナ管理を簡単にする
+
+version: "3"
+
+services:
+  app:
+    # Dockerイメージを自作している場合はbuildコマンドを記述
+    build:
+      # docker-compose.ymlからDockerfileへの相対位置を記述
+      context: .
+    ports:
+      # ホスト側:コンテナ側
+      - "8000:8000"
+    # volume(=データを永続化できる場所)コンテナ本体にマウントして使う
+    volumes:
+      # ホスト側:コンテナ側
+      - "./profiles-rest-api:/profiles-rest-api"
+    # docker-compose up時に実行されるコマンド
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
