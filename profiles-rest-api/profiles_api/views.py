@@ -10,8 +10,17 @@ from rest_framework import status
 # Viewsetsを継承してクラスベースビューを作成
 from rest_framework import viewsets
 
-# シリアライザーをimport
+# Tokenを用いて認証を行う
+from rest_framework.authentication import TokenAuthneticatoin
+
+# Serializerをimport
 from profiles_api import serializers
+
+# modelをimport
+from profiles_api import models
+
+# permissionをimport
+from profiles_api import permissioins
 
 
 class HelloAPIView(APIView):
@@ -105,3 +114,21 @@ class HelloViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         """Handle removing an object"""
         return Response({'http_mothod': 'DELETE'})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handle creating and updating profiles"""
+    serializer_class=serializers.UserProfileSerializer
+    queryset=models.UserProfile.objects.all()
+
+    # Token認証を行うことを定義
+    authentication_classes=(TokenAuthneticatoin,)
+    # 認証方法を定義
+    permission_classes=(permissioins.UpdateOwnProfile,)
+
+
+    """
+    ModelViewSetsを使用することで、自動的に以下のメソッドを実装してくれる。
+    list(), retrieve(), create(), update(), partial_update(), destroy()
+    したがって最低限設定するのは、serializer_classとquerysetだけで良い
+    """
