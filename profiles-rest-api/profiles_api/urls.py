@@ -14,11 +14,11 @@ Class-based viewsをFunction-based viewsと同じ働きをするようよしな�
 
 router = DefaultRouter()
 router.register('hello-viewset', views.HelloViewSet, basename='hello-viewset')
-
 # Viewでquerysetの記述があればbasenameの設定はいらない
-router.register('profile',views.UserProfileViewSet)
+router.register('profile', views.UserProfileViewSet)
 
 urlpatterns = [
-    path('hello-view', views.HelloAPIView.as_view()),
+    path('hello-view/', views.HelloAPIView.as_view()),
+    path('login/', views.UserLoginApiView.as_view()),
     path('', include(router.urls)),
 ]

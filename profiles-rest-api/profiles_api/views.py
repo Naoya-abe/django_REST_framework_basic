@@ -4,21 +4,26 @@ from rest_framework.views import APIView
 # restframeworkでは、値を返す際にResponseを用いる
 from rest_framework.response import Response
 
+# Token認証を用いるViewに設定する
+from rest_framework.authentication import TokenAuthentication
+
+# Token発行を行うViewの作成に用いる
+from rest_framework.authtoken.views import ObtainAuthToken
+
+# ログイン画面をブラウザで表示できるようにする
+from rest_framework.settings import api_settings
+
 # HTTPステータスコード(200, 400, etc)
 from rest_framework import status
-
 # Viewsetsを継承してクラスベースビューを作成
 from rest_framework import viewsets
-
 # 検索機能を追加
 from rest_framework import filters
 
 # Serializerをimport
 from profiles_api import serializers
-
 # modelをimport
 from profiles_api import models
-
 # permissionをimport
 from profiles_api import permissions
 
@@ -129,8 +134,18 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     # 検索対象を定義
     search_fields = ('email', 'name',)
 
+    # 認証方法の定義
+    authentication_classes = (TokenAuthentication,)
+
     """
     ModelViewSetsを使用することで、自動的に以下のメソッドを実装してくれる。
     list(), retrieve(), create(), update(), partial_update(), destroy()
     したがって最低限設定するのは、serializer_classとquerysetだけで良い
     """
+
+
+class UserLoginApiView(ObtainAuthToken):
+    """Handle creating user authentication tokens"""
+
+    # ブラウザでログイン画面のテストが可能になる
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
