@@ -10,8 +10,8 @@ from rest_framework import status
 # Viewsetsを継承してクラスベースビューを作成
 from rest_framework import viewsets
 
-# Tokenを用いて認証を行う
-from rest_framework.authentication import TokenAuthneticatoin
+# 検索機能を追加
+from rest_framework import filters
 
 # Serializerをimport
 from profiles_api import serializers
@@ -20,7 +20,7 @@ from profiles_api import serializers
 from profiles_api import models
 
 # permissionをimport
-from profiles_api import permissioins
+from profiles_api import permissions
 
 
 class HelloAPIView(APIView):
@@ -118,14 +118,16 @@ class HelloViewSet(viewsets.ViewSet):
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating and updating profiles"""
-    serializer_class=serializers.UserProfileSerializer
-    queryset=models.UserProfile.objects.all()
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
 
-    # Token認証を行うことを定義
-    authentication_classes=(TokenAuthneticatoin,)
-    # 認証方法を定義
-    permission_classes=(permissioins.UpdateOwnProfile,)
+    # 適用するPermissionを定義（タプル形式）
+    permission_classes = (permissions.UpdateOwnProfile,)
 
+    # 検索機能を追加（タプル形式）
+    filter_backends = (filters.SearchFilter,)
+    # 検索対象を定義
+    search_fields = ('email', 'name',)
 
     """
     ModelViewSetsを使用することで、自動的に以下のメソッドを実装してくれる。
