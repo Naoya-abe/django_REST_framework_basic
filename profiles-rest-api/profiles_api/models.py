@@ -6,6 +6,8 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 # BaseUserManager利用してUserManagerモデルをカスタマイズ
 from django.contrib.auth.models import BaseUserManager
+# profiles_projectのsettings.pyを参照できるようにする
+from django.conf import settings
 
 
 class UserProfileManager(BaseUserManager):
@@ -81,3 +83,20 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     # 管理画面などで表示される文字列を定義
     def __str__(self):
         return self.email
+
+
+class ProfilesFeedItem(models.Model):
+    """Profile status update"""
+
+    # 外部キーの設定(ForeignKey=多:1)
+    user_profile = models.ForeignKey(
+        # to:どのmodelと関係をもたせるか
+        settings.AUTH_USER_MODEL,
+        # CASCADE:外部キーが削除されたら一緒に消える
+        on_delete=models.CASCADE
+    )
+    status_text = models.CharField(max_length=255)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.status_text

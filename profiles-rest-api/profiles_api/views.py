@@ -19,6 +19,8 @@ from rest_framework import status
 from rest_framework import viewsets
 # 検索機能を追加
 from rest_framework import filters
+# 認証済みのUserだけにAPIの許可
+from rest_framework.permissions import IsAuthenticated
 
 # Serializerをimport
 from profiles_api import serializers
@@ -149,3 +151,18 @@ class UserLoginApiView(ObtainAuthToken):
 
     # ブラウザでログイン画面のテストが可能になる
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handles creating, reading and updating profile feed items"""
+    authentication_classes = (TokenAuthentication,)
+    serializer_class = serializers.ProfileFeedItemSerializer
+    queryset = models.ProfilesFeedItem.objects.all()
+    permission_classes = (permissions.UpdateOwnStatus, IsAuthenticated)
+
+    # readonlyにしているからuser_profileはどのようにして書き込む？
+    # perform_createをオーバーライドして、自動的にuser_profileにrequest.user.idを入力できるようにする
+    # perform_createはviewsetにpostメソッドが飛んできたら必ず実行される
+    def perform_create(self, serializer):
+        """Sets the user profile to the logged in user"""
+        serializer.save(user_profile=self.request.user)
